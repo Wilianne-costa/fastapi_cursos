@@ -2,10 +2,9 @@
 from typing import List
 from fastapi import FastAPI, Response
 from pydantic import BaseModel
-from schema import AlunoCriacaoSchema, AlunoSchema
+from schema import AlunoCriacaoSchema, AlunoSchema, UpdateSchema
 from models import Aluno
 from starlette import status 
-import json
 
 
 app = FastAPI()
@@ -23,11 +22,11 @@ app = FastAPI()
     status_code=status.HTTP_201_CREATED
 )
 def cadastrar_aluno(request: AlunoCriacaoSchema):
-    aluno = Aluno(nome=request.nome, idade=request.idade, curso=request.curso)
-    aluno.save()
-    
-    return aluno.to_mongo().to_dict()
-
+        aluno = Aluno(nome=request.nome, idade=request.idade, curso=request.curso)
+        aluno.save()
+        
+        return aluno.to_mongo().to_dict()
+ 
 ##############################################################
 # DELETAR ALUNO POR ID
 ##############################################################
@@ -86,15 +85,29 @@ def listar_alunos_nome(nome=None, idade=None, curso=None):
 ##############################################################
 # ATUALIZAR ALUNO POR ID
 ##############################################################
-@app.put(
+@app.patch(
     "/alunos/{id}",
     response_model=AlunoSchema, 
     status_code=status.HTTP_200_OK
 )
-def editar_aluno(id: str, request: AlunoCriacaoSchema):
+def aluno_patch(id: str, request: UpdateSchema):
     aluno = Aluno.objects(id=id)
-    print(request.dict(exclude_none=True))
     aluno.update(**request.dict(exclude_none=True))
     
     return aluno.first().to_mongo().to_dict()
+
+##############################################################
+# ATUALIZAR ALUNO POR ID todos os campos
+##############################################################
+@app.put(
+    "/alunos/{id}",
+    response_model=AlunoSchema, 
+    status_code=status.HTTP_200_OK)
+    
+def aluno_put(id:str, request:AlunoCriacaoSchema):
+    aluno = Aluno(id=id,nome=request.nome, idade=request.idade, curso=request.curso)
+    aluno=aluno.save()
+    
+    return aluno.to_mongo().to_dict()
+    
 
