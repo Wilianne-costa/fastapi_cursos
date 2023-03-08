@@ -19,7 +19,6 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string")
 
 
-
 class AlunoCriacaoSchema(BaseModel):
     nome :str
     idade: int
@@ -30,28 +29,26 @@ class AlunoCriacaoSchema(BaseModel):
         nome = valor.split()
         if len(nome)< 2:
             raise HTTPException(
-                status_code=400, 
+                status_code=400,
                 detail="Nome cadastrado invalido! Informe nome e sobrenome. Ex: José Santos"
             )
-        
-        return valor
-    
 
-    
-    
+        return valor
+
+
 class UpdateSchema(BaseModel):
     nome: Optional[str] = None
     idade: Optional[int] = None
     curso: Optional[str] = None
 
- 
+
 class AlunoSchema(BaseModel):
     id: PyObjectId = PydanticField(default_factory=PyObjectId, alias="_id")
-    nome: str 
+    nome: str
     idade: int
     curso: str
     data_criacao: datetime
-    
+
     class Config:
         allow_population_by_field_name = True
         json_encoders = {ObjectId: str}
